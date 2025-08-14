@@ -83,6 +83,106 @@ Unity 2018’de bu ayar:
 
 ## ⚙️ 2. **Project Settings > Player (Android Sekmesi)**
 
+
+### ✅ Resolution and Presentation (Android)
+
+Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en iyi değerlerle** birlikte listeliyorum:
+
+### ### ✅ **1. Start in fullscreen mode**
+
+* **Açıklama**: Oyunun tam ekran mı başlayacağını belirler.
+* **Önerilen**: ✅ **İşaretli olmalı** (Tam ekran mobilde standarttır.)
+
+
+### ### ✅ **2. Render outside safe area** *(Unity 2018.2+)*
+
+* **Açıklama**: Özellikle "notch" (çentikli) cihazlar için. Bu ayar, çentikli bölgelere içerik çizilip çizilmeyeceğini belirler.
+* **Önerilen**:
+
+  * **Oyun UI’si ekranın kenarına kadar gitmemeliyse**: ❌ Devre dışı
+  * **Full ekran kullanımı istiyorsan**: ✅ Aktif edilebilir ama UI dikkatle tasarlanmalı.
+
+
+### ### ✅ **3. Resolution Scaling Mode**
+
+* **Seçenekler**:
+
+  * **Disabled**: Ölçekleme yapılmaz.
+  * **Fixed DPI**: Belirli bir DPI değeri hedeflenir.
+  * **Fixed Resolution**: Sabit çözünürlük kullanılır (tavsiye edilmez).
+* **Önerilen**: ✅ **Fixed DPI**
+
+
+### ### ✅ **4. Target DPI** *(sadece "Fixed DPI" seçiliyse etkinleşir)*
+
+* **Açıklama**: Oyun ekranının render edileceği hedef DPI değeri.
+* **Önerilen**: `240` veya `320`
+
+  > Düşük DPI = daha az işlem gücü = daha iyi performans
+  > Yüksek DPI = daha net görüntü = daha fazla kaynak kullanımı
+
+
+### ### ✅ **5. Orientation**
+
+* **Oyun yönünü belirler**.
+
+| Oyun Tipi                | Ayar                             |
+| ------------------------ | -------------------------------- |
+| 2D Puzzle / Casual       | Portrait                         |
+| Aksiyon / Platform / FPS | Landscape Left / Landscape Right |
+
+* **Auto Rotation**: Eğer destekleniyorsa, alt seçenekleri **manuel kontrol et**:
+
+  * `Portrait`: ✅
+  * `Portrait Upside Down`: ❌ (çoğu cihaz desteklemez veya rahatsız edici olabilir)
+  * `Landscape Left / Right`: Oyunun yönüne göre seçilmeli
+
+
+### ### ✅ **6. Use 32-bit Display Buffer**
+
+* **Açıklama**: Daha geniş renk aralığı sağlar ama performans etkilenebilir.
+* **Önerilen**:
+
+  * ✅ Aktif: Renk kalitesi önemliyse
+  * ❌ Pasif: Düşük cihazlar hedefleniyorsa
+
+
+### ### ✅ **7. Use Protected Graphics Memory**
+
+* **Açıklama**: Ekran görüntüsü alınmasını engeller (DRM korumalı içerikler için).
+* **Önerilen**: ❌ Devre dışı
+
+  > Sadece özel durumlar için kullanılır (örneğin güvenlik gerekçesiyle).
+
+
+### ### ✅ **8. Allow HDR Display**
+
+* \*\*Unity 2018’de Android için genelde **pasif** veya **görünmez** olabilir.
+* **Önerilen**: Varsayılan bırakın (mobilde nadiren kullanılır).
+
+
+## ✅ **Özetle: Önerilen Ayarlar**
+
+| Ayar                          | Önerilen Değer            |
+| ----------------------------- | ------------------------- |
+| Start in Fullscreen           | ✔️ Evet                   |
+| Render Outside Safe Area      | ❌ Hayır (UI varsa)        |
+| Resolution Scaling Mode       | Fixed DPI                 |
+| Target DPI                    | 240–320 (cihaza göre)     |
+| Orientation                   | Oyun türüne göre          |
+| Use 32-bit Display Buffer     | ❌ Hayır (performans için) |
+| Use Protected Graphics Memory | ❌ Hayır                   |
+
+
+
+
+### ✅ Publishing Settings
+
+* **Keystore** yapılandırması (release build için zorunlu)
+* **Minify with Proguard**: Proguard dosyası düzenlenmeli (gereksiz kodları silmek için)
+
+
+
 ### ✅ Other Settings:
 
 #### ✔️ Identification:
@@ -122,7 +222,12 @@ Unity 2018’de bu ayar:
 * **Dynamic Batching**: ✔️ (düşük poligonlu objelerde etkili)
 * **IL2CPP Code Stripping Level**: `Medium` veya `High` (gereksiz kodları atmak için)
 
----
+
+### ✅ Publishing Settings
+
+* **Keystore** yapılandırması (release build için zorunlu)
+* **Minify with Proguard**: Proguard dosyası düzenlenmeli (gereksiz kodları silmek için)
+
 
 ## 🎛️ 3. **Project Settings > Quality (Android platformu seçili)**
 
@@ -146,7 +251,3 @@ Unity 2018’de bu ayar:
 
 ---
 
-## 📦 Ekstra: Player Settings > Publishing Settings
-
-* **Keystore** yapılandırması (release build için zorunlu)
-* **Minify with Proguard**: Proguard dosyası düzenlenmeli (gereksiz kodları silmek için)
