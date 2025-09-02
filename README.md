@@ -233,8 +233,10 @@ Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en 
 
 ### ✅ Seviye Ayarı:
 
-* **Default Quality Level (Android)**: `Medium` veya `Low`
-  (oyun grafiklerine göre optimize edilir)
+* **Default Quality Level (Android)**: Sadece `Low` ve `Medium` kalite seviyelerini tutun.
+* **LOD Bias**: 1
+* **Texture Quality**: Half Res
+* **Anti-Aliasing**: Kapalı veya 2x
 
 ### ✅ Önemli Kalite Ayarları:
 
