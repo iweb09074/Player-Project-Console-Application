@@ -97,7 +97,7 @@ Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en 
 ### ### ✅ **2. Render outside safe area** *(Unity 2018.2+)*
 
 * **Açıklama**: Özellikle "notch" (çentikli) cihazlar için. Bu ayar, çentikli bölgelere içerik çizilip çizilmeyeceğini belirler.
-* **Önerilen**:
+* **Önerilen**: Kapalı
 
   * **Oyun UI’si ekranın kenarına kadar gitmemeliyse**: ❌ Devre dışı
   * **Full ekran kullanımı istiyorsan**: ✅ Aktif edilebilir ama UI dikkatle tasarlanmalı.
@@ -124,14 +124,7 @@ Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en 
 
 ### ### ✅ **5. Orientation**
 
-* **Oyun yönünü belirler**.
-
-| Oyun Tipi                | Ayar                             |
-| ------------------------ | -------------------------------- |
-| 2D Puzzle / Casual       | Portrait                         |
-| Aksiyon / Platform / FPS | Landscape Left / Landscape Right |
-
-* **Auto Rotation**: Eğer destekleniyorsa, alt seçenekleri **manuel kontrol et**:
+* **Default Orientation**: Portrait / Landscape (ihtiyaca göre)
 
   * `Portrait`: ✅
   * `Portrait Upside Down`: ❌ (çoğu cihaz desteklemez veya rahatsız edici olabilir)
@@ -211,7 +204,7 @@ Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en 
 
 #### ✔️ Graphics API:
 
-* ✔️ OpenGLES3 (ilk sırada)
+* ✔️ OpenGLES3 (Vulkan değil, **OpenGLES3** seçili olsun (daha uyumlu))
 * ✔️ OpenGLES2 (eğer geniş cihaz desteği isteniyorsa)
 
 #### ✔️ Optimization:
