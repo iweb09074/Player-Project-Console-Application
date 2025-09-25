@@ -58,14 +58,11 @@ Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en 
 
 ### ✅ **1. GameManager İçine Entegre Etmek (Tercih Edilen Yöntem)**
 
-FPS sınırı dahil tüm sistem ayarları tek merkezde yönetmek Küçük/orta projeler için idealdir.
+FPS sınırlama gibi sistemsel görevleri `GameManager` gibi bir ana kontrol yapısına entegre etmek mantıklıdır. Çünkü:
 
 * **`QualitySettings.vSyncCount = 0`** satırı kritiktir. VSync açıksa, `targetFrameRate` işe yaramaz. Özellikle Android cihazlarda FPS sınırı çalışmıyor gibi görünmesinin en büyük sebebi budur.
 * Unity 2018 kullanıyorsan ve oyunun Android platformunda çalışıyorsa, FPS’yi sabit bir değere (örneğin 30) sınırlamak için `Application.targetFrameRate` özelliğini kullanabilirsin.
 * Bu da bizi genellikle **GameManager** gibi bir merkezi yönetime (veya çekirdek singleton yapılara) götürür.
-
-FPS sınırlama gibi sistemsel görevleri `GameManager` gibi bir ana kontrol yapısına entegre etmek mantıklıdır. Çünkü:
-
 * Oyun boyunca aktif olur.
 * Diğer sistemler de buraya bağlanabilir (örneğin ayarlardan FPS limiti değiştirilebilir).
 * Yönetimi merkezi olur.
@@ -125,17 +122,14 @@ public class GameManager : MonoBehaviour
 
 ---
 
-### ✅ **2. FPS Sabitleme Scripti (Singleton Yapısıyla)**
+### ✅ **2. Modüler FrameRateLimiter + GameManager'dan çağrı**
 
 Ayrı sistem olarak yazılır, GameManager veya başka yerden tetiklenir. Büyük/karmaşık sistemlerde iyi çalışır.
 
 * Bu ayar genellikle oyun başlatılırken uygulanır ve tüm oyun süresince aktif kalır, ancak bazı durumlarda (örneğin sahne geçişleri veya `QualitySettings` değişiklikleri) tekrar ayarlaman gerekebilir.
-
-- **Kullanım**: Singleton ile sahnede destroy öncesinde kullanılır.
-- `SplashController` sahnede olmasa bile, **ilk erişimde otomatik olarak kendi GameObject'ini oluşturur**.
-- Böylece `FindObjectOfType<SplashController>()` çağrısı işe yarar hale gelir.
-
-## 📌 Uygulama Adımları
+* `FrameRateLimiter` sınıfı **statik (static)** yapılmalı.
+* Bu durumda, **`FrameRateLimiter` sınıfını `static` olarak tutmak en doğru tercih** olur.
+* Sadece sahne geçişi yapıyorsan, `FrameRateLimiter`'ı **static** ve tamamen **stateless** (yani içinde veri tutmayan) hale getir. 
 
 1. Unity Editor’da yeni bir `GameObject` oluştur (örn. `FrameRateManager`)
 2. Yukarıdaki `FrameRateLimiter` scriptini oluştur ve bu objeye ata.
@@ -206,125 +200,89 @@ Böylece:
 
 ---
 
-
-### ✅ **3. Modüler FrameRateLimiter + GameManager'dan çağrı**
-
+### ✅ **3. FPS Sabitleme Scripti (Singleton Yapısıyla)**
 
 
 - **Kullanım**: Statik sınıflar üzerinden doğrudan script metodu script adına ön ek olarak çağırılır.
-- `SplashController` sınıfı **statik (static)** yapılmalı.
-- Diğer scriptler doğrudan `SplashController.Play(index);` şeklinde çağırmalı.
-- Bu durumda, **`SplashController` sınıfını `static` olarak tutmak en doğru tercih** olur.
-- Sadece sahne geçişi yapıyorsan, `SplashController`'ı **static** ve tamamen **stateless** (yani içinde veri tutmayan) hale getir. 
+- Diğer scriptler doğrudan `FrameRateLimiter.ApplyLimit(30);` şeklinde çağırmalı.
 - Böylece sahneye GameObject eklemene gerek kalmaz.
-  ```cs
-    using UnityEngine;
+
+    ```csharp
+    using System.Collections;
+    using System.Collections.Generic;
     using UnityEngine.SceneManagement;
+    using UnityEngine;
+    using UnityEngine.UI;
 
     public class LevelComplete : MonoBehaviour
     {
+        public FrameRateLimiter frameRateLimiter;
+
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("Player"))
-            {
-                int index = SceneManager.GetActiveScene().buildIndex + 1;
-
-                SplashController.Play(index);
-            }
+            frameRateLimiter.ApplyLimit(30);
         }
+        
     }
-  ```
-  ```cs
+    ```
+    ```cs
     using UnityEngine;
-    using UnityEngine.SceneManagement;
 
-    public static class SplashController
+    public class FrameRateLimiter : MonoBehaviour
     {
-        public static void Play(string sceneName)
+        public int targetFPS = 30;
+
+        private static FrameRateLimiter instance;
+
+        void Awake()
         {
-            SceneManager.LoadScene(sceneName);
+            // Singleton yapısı: sadece bir tane olsun
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+            DontDestroyOnLoad(gameObject); // Sahne geçişlerinde silinmesin
+
+            ApplySettings();
         }
 
-        public static void Play(int buildIndex)
+        void ApplySettings()
         {
-            if (buildIndex < SceneManager.sceneCountInBuildSettings)
+            Application.targetFrameRate = targetFPS;
+            QualitySettings.vSyncCount = 0; // VSync kapatılmalı, yoksa FPS'yi sınırlandırmaz
+        }
+
+        void OnApplicationFocus(bool hasFocus)
+        {
+            // Uygulama odağını kaybedip geri gelince ayar kaybolmasın diye tekrar uygula
+            if (hasFocus)
             {
-                SceneManager.LoadScene(buildIndex);
+                ApplySettings();
+            }
+        }
+
+        void OnApplicationPause(bool pauseStatus)
+        {
+            // Aynı şekilde uygulama duraklatılıp devam ederse de uygula
+            if (!pauseStatus)
+            {
+                ApplySettings();
             }
         }
     }
-  ```
-
-
-
-
-
-
-
-
-
-
-
+    ```
 
 ---
 
 ### ✅ **4. Harici Script ile Tercih Edilen Konumdan çağrı**
 
-### 1. **Sahnede Empty Object Zorunludur**
-- **Kullanım**: Değişken kullanılır
-- `SplashController` sahne geçişleri için **yalnızca bir araçtır.**
-- `LevelComplete` tetiklendiğinde direkt sahne geçişi yapılır.
-- Sahne Build Settings'de sıralı olarak eklenmiş mi kontrol et.
-- `SplashController` sahnede bir GameObject’e atanmış olmalı.
-- **Yazım Örneği**:
-  ```cs    
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine.SceneManagement;
-    using UnityEngine;
-    using UnityEngine.UI;
-
-    public class LevelComplete : MonoBehaviour
-    {
-        public SplashController splashController;
-
-        private void OnTriggerEnter(Collider other)
-        {
-            int index = SceneManager.GetActiveScene().buildIndex + 1;
-
-            splashController.Play(index);
-        }
-        
-    }
-  ```
-  ```cs
-    using UnityEngine;
-    using UnityEngine.SceneManagement;
-
-    public class SplashController : MonoBehaviour
-    {
-        public void Play(string sceneName)
-        {
-            SceneManager.LoadScene(sceneName);
-        }
-
-        public void Play(int buildIndex)
-        {
-            if (buildIndex < SceneManager.sceneCountInBuildSettings)
-            {
-                SceneManager.LoadScene(buildIndex);
-            }
-        }
-    }
-  ```
-
----
-
-### 2. **Çağırı Yapmak İçin Entegre Etmek**
 - **Kullanım**: Değişken kullanılmaz ise (sahnede mevcut olduğu için) FindObjectOfType<> metodu kullanılabilir.
-- `FindObjectOfType<SplashController>()` ile erişip, sahne geçişini tetikliyor.
+- `FindObjectOfType<FrameRateLimiter>()` ile erişip, sahne geçişini tetikliyor.
 - Bu durumda normalde `FindObjectOfType<T>()`, **yalnızca sahnede bulunan aktif GameObject'e atanmış MonoBehaviour türevlerini** bulabilir. 
-  ```cs    
+    ```cs    
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine.SceneManagement;
@@ -336,41 +294,60 @@ Böylece:
 
         private void OnTriggerEnter(Collider other)
         {
-            int index = SceneManager.GetActiveScene().buildIndex + 1;
-
-            FindObjectOfType<SplashController>().Play(index);
+            FindObjectOfType<FrameRateLimiter>().ApplyLimit(30);
         }
         
     }
-  ```
-  ```cs
+    ```
+    ```cs
     using UnityEngine;
-    using UnityEngine.SceneManagement;
 
-    public class SplashController : MonoBehaviour
+    public class FrameRateLimiter : MonoBehaviour
     {
-        public void Play(string sceneName)
+        public int targetFPS = 30;
+
+        private static FrameRateLimiter instance;
+
+        void Awake()
         {
-            SceneManager.LoadScene(sceneName);
+            // Singleton yapısı: sadece bir tane olsun
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+            DontDestroyOnLoad(gameObject); // Sahne geçişlerinde silinmesin
+
+            ApplySettings();
         }
 
-        public void Play(int buildIndex)
+        void ApplySettings()
         {
-            if (buildIndex < SceneManager.sceneCountInBuildSettings)
+            Application.targetFrameRate = targetFPS;
+            QualitySettings.vSyncCount = 0; // VSync kapatılmalı, yoksa FPS'yi sınırlandırmaz
+        }
+
+        void OnApplicationFocus(bool hasFocus)
+        {
+            // Uygulama odağını kaybedip geri gelince ayar kaybolmasın diye tekrar uygula
+            if (hasFocus)
             {
-                SceneManager.LoadScene(buildIndex);
+                ApplySettings();
+            }
+        }
+
+        void OnApplicationPause(bool pauseStatus)
+        {
+            // Aynı şekilde uygulama duraklatılıp devam ederse de uygula
+            if (!pauseStatus)
+            {
+                ApplySettings();
             }
         }
     }
-  ```
-  
-
-
-
-
-
-
-
+    ```
 
 ---
 
