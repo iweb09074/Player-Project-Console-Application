@@ -1,78 +1,5 @@
 
-## 🔧 1. **Build Settings (File > Build Settings > Android)**
-
-### ✅ **Build Settings**
-
-### Texture Compression:
-
-Unity bu kısımda Android için hangi **Texture Compression formatının** kullanılacağını belirlemeni ister.
-
-Aşağıdaki seçenekler arasından seçilir:
-
-| Seçenek                              | Açıklama                                                                         |
-| ------------------------------------ | -------------------------------------------------------------------------------- |
-| **ETC (default)**                    | En geniş cihaz uyumluluğu. Ancak sıkıştırma kalitesi ve verimlilik düşüktür.     |
-| **ETC2 (GLES 3.0 ve üstü cihazlar)** | Daha kaliteli, daha modern; Android 4.3+ cihazlarda desteklenir.                 |
-| **ASTC**                             | En yüksek kalite ve en iyi sıkıştırma; ancak sadece yeni cihazlarda desteklenir. |
-| **DXT (Tegra cihazlar)**             | Eski NVIDIA Tegra cihazlar için. Yaygın değil.                                   |
-| **PVRTC**                            | Sadece iOS cihazlar için uygundur, Android’de kullanılmaz.                       |
-
-#### Önerilen:
-
-* Eğer oyun **geniş Android cihaz yelpazesini** hedefliyorsa:
-  🔹 **ETC2** (tavsiye edilen)
-* Eğer oyun **yüksek kalite grafik** gerektiriyorsa ve **sadece yeni cihazlar** hedefleniyorsa:
-  🔹 **ASTC**
-
-> ❗ Unutma: Texture Compression tipi bazı cihazlarda desteklenmezse oyun açılmayabilir veya bozuk görseller olur.
-
-### Platform:
-
-* **Platform**: Android
-* **Texture Compression**: `ETC2` (genel uyumluluk için)
-
-  > Not: Eğer oyununuz sadece belirli cihazlar içinse (örneğin Mali GPU), `ASTC` ya da `DXT` gibi daha verimli seçenekler değerlendirilebilir.
-
-### Build System:
-
-* **Build System**: Gradle (recommended)
-* **Export Project**: ❌ (sadece özel işlemler gerekiyorsa işaretleyin)
-
-### Development Build (sadece test aşamasında):
-
-* **Development Build**: ✔️ (Debug için)
-* **Script Debugging**: ✔️
-* **Autoconnect Profiler**: ✔️ (performans analizi için)
-
-### Minify:
-
-* `Release` modunda:
-
-  * **Minify**: Proguard ile minify işlemi yapılabilir (Proguard ayarlarına dikkat edin)
-
-### Compression Method Seçenekleri:
-
-Unity 2018’de bu ayar:
-**Build Settings > Compression Method** altında görünür.
-
-| Seçenek     | Açıklama                                                                                   |
-| ----------- | ------------------------------------------------------------------------------------------ |
-| **Default** | Unity’nin platforma göre uygun gördüğü sıkıştırma yöntemi. Genelde LZ4.                    |
-| **LZ4**     | Hızlı yükleme süresi, debug build’lerde iyidir.                                            |
-| **LZ4HC**   | Daha yüksek sıkıştırma oranı, ama daha uzun build süresi. Release için daha uygundur.      |
-| **None**    | Hiçbir sıkıştırma yapmaz. Büyük build dosyaları üretir. Sadece özel durumlarda kullanılır. |
-
-#### Önerilen:
-
-* Geliştirme (Debug/Test) için:
-  🔹 **LZ4**
-* Yayınlama (Release/Store) için:
-  🔹 **LZ4HC**
-
-
----
-
-## ⚙️ 2. **Player Settings (File > Player Settings)**
+## ⚙️ 1. **Player Settings (File > Player Settings)**
 
 ### ✅ **Resolution and Presentation (Android)**
 
@@ -196,7 +123,7 @@ Aşağıda tüm ayarları açıklamaları ve **mobil oyunlar için önerilen en 
 ---
 
 
-## 🎛️ 3. **Project Settings > Quality (Android platformu seçili)**
+## 🎛️ 2. **Project Settings > Quality (Android platformu seçili)**
 
 ### Seviye Ayarı:
 
