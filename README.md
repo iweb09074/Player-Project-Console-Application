@@ -124,12 +124,12 @@ public class GameManager : MonoBehaviour
 
 ### ✅ **2. Modüler FrameRateLimiter + GameManager'dan çağrı**
 
-Ayrı sistem olarak yazılır, GameManager veya başka yerden tetiklenir. Büyük/karmaşık sistemlerde iyi çalışır.
-
 * Bu ayar genellikle oyun başlatılırken uygulanır ve tüm oyun süresince aktif kalır, ancak bazı durumlarda (örneğin sahne geçişleri veya `QualitySettings` değişiklikleri) tekrar ayarlaman gerekebilir.
 * `FrameRateLimiter` sınıfı **statik (static)** yapılmalı.
 * Bu durumda, **`FrameRateLimiter` sınıfını `static` olarak tutmak en doğru tercih** olur.
-* Sadece sahne geçişi yapıyorsan, `FrameRateLimiter`'ı **static** ve tamamen **stateless** (yani içinde veri tutmayan) hale getir. 
+* Sadece sahne geçişi yapıyorsan, `FrameRateLimiter`'ı **static** ve tamamen **stateless** (yani içinde veri tutmayan) hale getir.
+
+Ayrı sistem olarak yazılır, GameManager veya başka yerden tetiklenir. Büyük/karmaşık sistemlerde iyi çalışır.
 
 1. Unity Editor’da yeni bir `GameObject` oluştur (örn. `FrameRateManager`)
 2. Yukarıdaki `FrameRateLimiter` scriptini oluştur ve bu objeye ata.
